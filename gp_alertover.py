@@ -1,5 +1,5 @@
 import requests
-from gold_price_monitor.gold_price import get_gold_price
+from gold_price import get_gold_price
 
 
 def gp_alertover():
