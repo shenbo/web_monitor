@@ -39,4 +39,5 @@ def get_gold_price():
 
     return key
 
-# get_gold_price()
+
+print(get_gold_price())
