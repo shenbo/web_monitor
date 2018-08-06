@@ -38,11 +38,12 @@ def send_to_ftqq():
           '- ref：[dyhjw.com/hjtd/](http://www.dyhjw.com/hjtd/)'
     msg = msg.format(p[0], p[1], p[2])
 
-    key = 'SCU10033T765c015c42529885b78aeb3545725a9d5ac305375cc59'
-    api = 'https://sc.ftqq.com/{}.send?text={}&desp={}'
+    with open('ftqq.ini', 'rb') as f:
+        key = f.readline().decode('utf8')
+        api = 'https://sc.ftqq.com/{}.send?text={}&desp={}'
 
-    api = api.format(key, 'Gold_Price', msg)
-    requests.post(api)
+        api = api.format(key, 'Gold_Price', msg)
+        requests.post(api)
 
 
 # send_to_ftqq()

@@ -24,6 +24,7 @@ def func():
                 gold_price.send_to_ftqq()
                 gaoxiao_job.send_to_ftqq()
 
+    # gaoxiao_job.send_to_ftqq()
     # --------end-------------------------------------
     #-------------------------------------------------
     global timer
