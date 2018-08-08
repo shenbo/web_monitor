@@ -32,7 +32,7 @@ def get_job_list():
 
     # 获得列表
     job_div = soup.find_all('div', {'class': 'style2'})
-    # print(job_div)
+    print(job_div)
 
     job_list = '[gaoxiaojob.com](http://www.gaoxiaojob.com/zhaopin/gaoxiao/nanjing/)\n\n'
     for div in job_div:
@@ -52,13 +52,16 @@ def get_job_list():
 
 def send_to_ftqq():
     msg = get_job_list()
+    print(msg)
 
     with open('ftqq.ini', 'rb') as f:
         key = f.readline().decode('utf8')
         api = 'https://sc.ftqq.com/{}.send?text={}&desp={}'
 
         api = api.format(key, 'Nanjing_Jobs', msg)
-        requests.post(api)
+
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/57.0.2987.133'}
+        requests.post(api, headers=headers)
 
 
-# send_to_ftqq()
+send_to_ftqq()

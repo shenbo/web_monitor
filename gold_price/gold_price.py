@@ -44,7 +44,9 @@ def send_to_ftqq():
         api = 'https://sc.ftqq.com/{}.send?text={}&desp={}'
 
         api = api.format(key, 'Gold_Price', msg)
-        requests.post(api)
+        
+        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/57.0.2987.133'}
+        requests.post(api, headers=headers)
 
 
 # send_to_ftqq()
