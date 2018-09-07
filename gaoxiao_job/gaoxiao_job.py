@@ -52,7 +52,7 @@ def get_job_list():
 
 
 def send_to_ftqq(text, desp):
-    with open('../config.json', encoding='utf-8') as f:
+    with open('web_monitor/config.json', encoding='utf-8') as f:
         config = json.load(f)
         key = config['ftqq']
         print(key)

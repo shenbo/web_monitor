@@ -58,7 +58,7 @@ def send_mail(mail_title='', mail_content=''):
     sender = '405122738@qq.com'
     receiver = '405122738@qq.com'
 
-    with open('../config.json', encoding='utf-8') as f:
+    with open('web_monitor/config.json', encoding='utf-8') as f:
         config = json.load(f)
         pwd = config['qqmail']              # qq邮箱授权码
         print(pwd)
