@@ -1,12 +1,17 @@
+# coding=UTF-8
+
 import requests
+import json
 from bs4 import BeautifulSoup
 
 
-def get_job_list():
-    # 南京高校人才网
-    gao_xiao_url = 'http://www.gaoxiaojob.com/zhaopin/gaoxiao/nanjing/'
-    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/57.0.2987.133'}
+# 南京高校人才网
+gao_xiao_url = 'http://www.gaoxiaojob.com/zhaopin/gaoxiao/nanjing/'
 
+headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/57.0.2987.133'}
+
+
+def get_job_list():
     res = requests.get(gao_xiao_url, headers=headers)
     # soup = BeautifulSoup(res.content, 'lxml')
     soup = BeautifulSoup(res.content, 'html.parser')
@@ -32,58 +37,44 @@ def get_job_list():
     # 获得列表
     job_div = soup.find_all('div', {'class': 'style2'})
     # print(job_div)
-
-    job_list = ''
-    html_list = ''
+    job_list = '<a href=\"{}\"> gaoxiaojob.com </a> <br><br>\n'.format(gao_xiao_url)
     for div in job_div:
         # 获得日期、网址、描述、人数、截止日期
 
         date = div.span.small.get_text()
         web = div.span.a.get('href')
         des = div.span.a.get_text()
-        # job = date + web + des
-        # print(job)
-        #
-        # job_list += job + '\n'
 
-        html = '<a href=\"{}\"> {} {} </a> <br><br>'.format(web, date, des)
-        html_list += html + '\n'
+        job = '<a href=\"{}\"> {} {} </a> <br><br>\n'.format(web, date, des) # html格式
+        job_list += job
 
-
-    return html_list
-
-
-from email.mime.text import MIMEText
-from email.header import Header
-from smtplib import SMTP_SSL
+    return job_list
 
 
 def send_mail(mail_title='', mail_content=''):
-    sender_qq_mail = '405122738@qq.com'
-    receiver = 'shenbo@hotmail.com'
+    from email.mime.text import MIMEText
+    from email.header import Header
+    from smtplib import SMTP_SSL
+    sender = '405122738@qq.com'
+    receiver = '405122738@qq.com'
 
-    # pwd为qq邮箱的授权码
-    pwd = 'ucalyvqvxszxcafc'
-    # qq邮箱smtp服务器
-    host_server = 'smtp.qq.com'
+    with open('../config.json', encoding='utf-8') as f:
+        config = json.load(f)
+        pwd = config['qqmail']              # qq邮箱授权码
+        print(pwd)
 
-    #ssl登录
-    smtp = SMTP_SSL(host_server)
-    #set_debuglevel: 参数值为1表示开启调试模式，参数值为0关闭调试模式
-    smtp.set_debuglevel(0)
-    smtp.ehlo(host_server)
-    smtp.login(sender_qq_mail, pwd)
+        smtp = SMTP_SSL('smtp.qq.com')      # ssl登录
+        smtp.login(sender, pwd)
 
-    msg = MIMEText(mail_content, "html", 'utf-8')
-    msg["Subject"] = Header(mail_title, 'utf-8')
-    msg["From"] = sender_qq_mail
-    msg["To"] = receiver
-    smtp.sendmail(sender_qq_mail, receiver, msg.as_string())
-    smtp.quit()
+        msg = MIMEText(mail_content, "html", 'utf-8')
+        msg["Subject"] = Header(mail_title, 'utf-8')
+        msg["from"] = sender
+        msg["to"] = receiver
+
+        smtp.sendmail(sender, receiver, msg.as_string())    # 发送
+        smtp.quit()
 
 
-mail_title = '南京高校招聘'
-mail_content = get_job_list()
-
-send_mail(mail_title=mail_title, mail_content=mail_content)
-
+title = '南京高校招聘'
+content = get_job_list()
+send_mail(title, content)

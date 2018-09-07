@@ -1,17 +1,21 @@
 # coding=UTF-8
+
 import requests
+import json
 from bs4 import BeautifulSoup
 
 
-def get_job_list():
-    # 南京高校人才网
-    gao_xiao_url = 'http://www.gaoxiaojob.com/zhaopin/gaoxiao/nanjing/'
-    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/57.0.2987.133'}
+# 南京高校人才网
+gao_xiao_url = 'http://www.gaoxiaojob.com/zhaopin/gaoxiao/nanjing/'
 
+headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/57.0.2987.133'}
+
+
+def get_job_list():
     res = requests.get(gao_xiao_url, headers=headers)
     # soup = BeautifulSoup(res.content, 'lxml')
     soup = BeautifulSoup(res.content, 'html.parser')
-    # print(soup.title.string)
+    print(soup.title.string)
 
     # 网页中关于描述的div格式
     '''
@@ -33,8 +37,7 @@ def get_job_list():
     # 获得列表
     job_div = soup.find_all('div', {'class': 'style2'})
     # print(job_div)
-
-    job_list = '[gaoxiaojob.com](http://www.gaoxiaojob.com/zhaopin/gaoxiao/nanjing/)\n\n'
+    job_list = '[gaoxiaojob.com]({})\n\n---\n\n'.format(gao_xiao_url)
     for div in job_div:
         # 获得日期、网址、描述、人数、截止日期
 
@@ -42,28 +45,24 @@ def get_job_list():
         web = div.span.a.get('href')
         des = div.span.a.get_text()
 
-
-        job = '1. [{} {}]({})\n\n'.format(date, des, web)
+        job = '1. [{} {}]({})\n\n'.format(date, des, web) # markdown格式
         job_list += job
 
     return job_list
 
 
-def send_to_ftqq():
-    msg = get_job_list()
-    print(msg)
-
-    with open('ftqq.ini', 'rb') as f:
-        key = f.readline().decode('utf8').strip()
+def send_to_ftqq(text, desp):
+    with open('../config.json', encoding='utf-8') as f:
+        config = json.load(f)
+        key = config['ftqq']
         print(key)
+
         api = 'https://sc.ftqq.com/{}.send'.format(key)
-
-        send_data = {'text': 'nanjing—jobs',
-                    'desp': msg}
-
-        headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/57.0.2987.133'}
+        send_data = {'text': text, 'desp': desp}
         res = requests.post(api, headers=headers, data=send_data)
         print(res.content)
 
 
-send_to_ftqq()
+title = '南京高校招聘'
+content = get_job_list()
+send_to_ftqq(title, content)
